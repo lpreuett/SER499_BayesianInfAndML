@@ -12,7 +12,7 @@ class Single_Neuron_Classifier:
         self.__DATA_FILE_PATH = 'bank-additional/bank-additional-full-randomized.csv'
         self.__data = []
         self.__data_labels = []
-        self.__debug = True
+        self.__debug = False
         self.__NUM_INPUT_DATA = 41188  # number between 1 and 45211
         self.__data_no = []
         self.__data_yes = []
@@ -203,13 +203,8 @@ class Single_Neuron_Classifier:
                     print("update weights: {}".format(self.__input_weights))
 
     def batch_train(self, num_batches=1, batch_size=50):
-        # assuming num_batches and batch_size are natural
-        # assuming num_batches * batch_size < dataset.length
-        # data_index = 0 # used to get a new data value from dataset
-        # gradient = -loss * datapoint.astype(float)
         for batch in range(num_batches):
-            batch_predict = 0.0
-            batch_target = 0
+            gradient = 0.0
             print("Starting batch {}".format(batch+1))
             for i in range(batch_size):
                 datapoint = self.__data[i]
@@ -218,22 +213,22 @@ class Single_Neuron_Classifier:
                     print("datapoint: {}".format(datapoint))
                     print("input_weights: {}".format(self.__input_weights))
                     print("datapoints . input_weights: {}".format(numpy.dot(datapoint[0:7], self.__input_weights)))
-                batch_predict += self.__sigmoid(numpy.dot(datapoint[0:7], self.__input_weights))
+                batch_predict = self.__sigmoid(numpy.dot(datapoint[0:7], self.__input_weights))
                 # get actual
-                batch_target += datapoint[7]  # add y value to actual
+                batch_target = datapoint[7]  # add y value to actual
                 # calculate loss
                 loss = batch_target - batch_predict
                 # calculate gradient
-                gradient = -loss * datapoint[0:7].astype(float)  # omit y value
+                gradient += -loss * datapoint[0:7].astype(float)  # omit y value
                 if self.__debug:
                     print("batch_output: {}".format(batch_predict))
                     print("batch_target: {}".format(batch_target))
                     print("loss: {}".format(loss))
                     print("gradient: {}".format(gradient))
 
-
+            gradient_avg = gradient / batch_size
             # calculate input weight deltas
-            weight_deltas = -self.__learning_rate * gradient
+            weight_deltas = -self.__learning_rate * gradient_avg
             # update weights
             temp_weights = []
             for i in range(len(self.__input_weights)):
