@@ -207,7 +207,7 @@ class Single_Neuron_Classifier:
             gradient = 0.0
             print("Starting batch {}".format(batch+1))
             for i in range(batch_size):
-                datapoint = self.__data[i]
+                datapoint = self.__data[i + batch_size * batch]
                 # get model probability
                 if self.__debug:
                     print("datapoint: {}".format(datapoint))
